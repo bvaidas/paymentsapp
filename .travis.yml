@@ -2,5 +2,5 @@ sudo: false
 language: java
 services:
   - docker
-after_script:
+after_success:
   - docker build -t test/paymentsapp .
