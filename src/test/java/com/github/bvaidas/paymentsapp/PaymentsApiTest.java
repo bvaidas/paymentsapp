@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureRestDocs
-public class PaymentsApiTests {
+public class PaymentsApiTest {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
