@@ -1,0 +1,183 @@
+= Classic Payments Application
+VB;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:sectanchors:
+
+[introduction]
+== Introduction
+
+It's a classic application exposing very basic Payments RESTful API. It contains minimal business logic to imitate transactions processing.
+
+WARNING: Please do not use this application in production.
+
+
+[application-components]
+== Application Components
+
+Application follows classic design pattern where data is stored one relational database and application runs in a container.
+
+Application utilizes http://projects.spring.io/spring-boot[Spring Boot] and following framework components
+
+[width="100%"]
+|=======
+|Component |Purpose
+|Spring Boot | Application Core framework.
+|Spring Boot Data JPA | Data access layer component. Used to manage application data. Might be replaced in the future with alternative datastore.
+|Spring Boot Web| Rest API component used to develop API controller.
+|Spring Rest Docs| Rest API documentation component. Used to generate API usage examples from testing data.
+|Relational database| Used to store application data. H2 database is used for testing purposes.
+|JDK 12 Container| Application runtime environment.
+|Docker| Container Engine used build Docker images.
+|Kubernetes/Openshift| Container platform used to run application. Application can run on pretty much any other container platform e.g. AWS ECS.
+|=======
+
+[api-design]
+== API Design
+
+Application consists of following REST API endpoints
+
+[width="100%"]
+|=======
+|API Endpoint |HTTP Method|Payload|Response|Purpose|Documentation
+|/v1/payments/{id}|GET|-|Payment JSON|Payment details retrieval by unique ID| See <<Getting Payment Details>>
+|/v1/payments/{id}|PUT|Payment JSON|HTTP Status code|API endpoint used to update Payment details| See <<Updating Payment Details>>
+|/v1/payments/{id}|DELETE|-|HTTP Status code|API endpoint used to delete single payment. Use with caution.| See <<Deleting Payment Details>>
+|/v1/payments/|POST|Payment Request Payload|Payment JSON object|Payment Creation API endpoint. Accepts Payment Request which is processed and transformed into Payment.| See <<Creating a Payment>>
+|/v1/payments/|GET|-|List of Payment JSON Objects|API endpoint used to retrieve all payment object. Supports paging and sorting| See <<List Payments>>
+|/v1/payments/|PATCH|List of Payment JSON Objects|Payment IDs list|Bulk import/update for Payments| See <<Bulk Import/Export Payments>>
+|=======
+
+
+
+[getting-started]
+== Building and Running the Application
+
+Clone application source and build Docker image by running following command:
+
+[source,bash]
+----
+$ docker build -t payments-app .
+----
+
+You can test image locally by executing
+
+[source,bash]
+----
+$ docker run -p 8080:8080 payments-app
+
+----
+
+Promote image into external image repository and then deploy it on Kubernetes Cluster
+
+[source,bash]
+----
+$ kubectl run payments-app --image=<image_tag> --port=8080
+
+----
+
+Application by default application is using in-memory database. To make it look more like "production" deployment it should be linked with relational database container.
+
+
+[api-usage]
+== API usage
+Further sections provides more details about each API endpoint usage. Samples are using `http://localhost:8080` as an application URL.
+
+[api-usage-payments-create]
+=== Creating a Payment
+
+You can create a Payment by performing `POST` request against API endpoint `/v1/payments/`.
+
+==== Payload
+
+Payment Request should be submitted as following payload
+
+include::{snippets}/payments-create/request-body.adoc[]
+
+Payload details
+
+include::{snippets}/payments-create/request-fields.adoc[]
+
+
+==== Examples
+
+Payment creation example
+include::{snippets}/payments-create/curl-request.adoc[]
+
+API will respond will following response
+include::{snippets}/payments-create/http-response.adoc[]
+
+[api-usage-payments-get]
+=== Getting Payment Details
+
+You can get Payment details by performing `GET` request against API endpoint `/v1/payments/{id}` where `{id}` is unique payment id.
+
+==== Examples
+
+include::{snippets}/payments-get/curl-request.adoc[]
+
+API will respond will following response
+include::{snippets}/payments-get/http-response.adoc[]
+
+[api-usage-payments-delete]
+=== Deleting Payment Details
+
+You can delete Payment details by performing `DELETE` request against API endpoint `/v1/payments/{id}` where `{id}` is unique payment id.
+
+==== Examples
+
+include::{snippets}/payments-delete/curl-request.adoc[]
+
+API will respond will following response
+include::{snippets}/payments-delete/http-response.adoc[]
+
+[api-usage-payments-update]
+
+=== Updating Payment Details
+
+You can update Payment details by performing `PUT` request against API endpoint `/v1/payments/{id}` where `{id}` is unique payment id.
+
+Successful operation will result with HTTP response code
+include::{snippets}/payments-update/http-response.adoc[]
+
+==== Examples
+
+include::{snippets}/payments-update/curl-request.adoc[]
+
+[api-usage-payments-list]
+=== List Payments
+
+You can list existing payments by performing `GET` request against API endpoint `/v1/payments/`.
+
+Successful operation will result with following response
+include::{snippets}/payments-list/curl-request.adoc[]
+
+[api-usage-payments-bulk-import]
+
+=== Bulk Import/Export Payments
+
+You can create or update multiple payments by performing `PATCH` request against API endpoint `/v1/payments/`.
+
+==== Payload
+You should provide JSON array List containing Payments as Payload. Successful operation will return Payment IDs array which you could use to make further API calls.
+
+Sample payload
+include::{snippets}/payments-bulk-import/request-body.adoc[]
+
+Sample response
+
+include::{snippets}/payments-bulk-import/response-body.adoc[]
+
+==== Examples
+
+include::{snippets}/payments-bulk-import/curl-request.adoc[]
+
+
+
+
+
+
