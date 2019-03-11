@@ -15,7 +15,7 @@
     <description>Payments application</description>
 
     <properties>
-        <java.version>1.10</java.version>
+        <java.version>1.8</java.version>
         <asciidoctorj-pdf.version>1.5.0-alpha.16</asciidoctorj-pdf.version>
         <asciidoctor.maven-plugin.version>1.5.2.1</asciidoctor.maven-plugin.version>
     </properties>
